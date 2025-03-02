@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/shop/cart.css' %}">
+<style>
+.discount-form {
+    width: 100%;
+    margin: 10px 0;
+}
+
+.discount-input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.discount-input-group input {
+    flex-grow: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.apply-discount-btn {
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.apply-discount-btn:hover {
+    background-color: #45a049;
+}
+
+.discount-message {
+    margin-top: 5px;
+    font-size: 14px;
+    min-height: 20px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Добавляем скрипт Stripe перед нашим скриптом -->
+<script src="https://js.stripe.com/v3/"></script>
+
+<div class="cart-container">
+    {% csrf_token %}
+    <h1>Shopping Cart</h1>
+    
+    <div id="cart-items" class="cart-items">
+        <!-- Здесь будут товары -->
+    </div>
+    
+    <div class="cart-summary">
+        <div class="summary-details">
+            <div class="summary-row">
+                <span>Subtotal:</span>
+                <span id="cart-subtotal">$0.00</span>
+            </div>
+            <div class="summary-row">
+                <div class="discount-form">
+                    <div class="discount-input-group">
+                        <input type="text" id="coupon-code" placeholder="Enter discount code">
+                        <button id="apply-coupon" class="apply-discount-btn">Apply</button>
+                    </div>
+                    <div id="coupon-message" class="discount-message"></div>
+                </div>
+            </div>
+            <div class="summary-row" id="discount-row" style="display: none;">
+                <span>Discount:</span>
+                <span id="cart-discount">-$0.00</span>
+            </div>
+            <div class="summary-row">
+                <div class="tax-selector">
+                    <select id="tax-select" class="tax-select">
+                        {% for tax in tax_rates %}
+                            <option value="{{ tax.rate }}" 
+                                    data-id="{{ tax.id }}"
+                                    data-stripe-tax-rate="{{ tax.stripe_tax_rate_id }}">
+                                {{ tax.name }} - {{ tax.rate }}%
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <span id="cart-tax">$0.00</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total:</span>
+                <span id="summary-cart-total">$0.00</span>
+            </div>
+        </div>
+        <button id="checkout-button" class="checkout-btn">Checkout</button>
+    </div>
+</div>
+
+<script src="{% static 'js/shop/cart.js' %}" data-stripe-key="{{ stripe_key }}"></script>
+{% endblock %}

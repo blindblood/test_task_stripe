@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ item.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/shop/item_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="item-detail-container">
+    <div class="item-image-container">
+        {% if item.image %}
+            <img src="{{ item.image.url }}" alt="{{ item.name }}" class="item-detail-image">
+        {% else %}
+            <img src="{% static 'images/placeholder.png' %}" alt="{{ item.name }}" class="item-detail-image">
+        {% endif %}
+    </div>
+    
+    <div class="item-info-container">
+        <h1 class="item-detail-name">{{ item.name }}</h1>
+        <div class="item-detail-price">${{ item.price }}</div>
+        <div class="item-detail-description">{{ item.description }}</div>
+        
+        <button class="add-to-cart-btn" 
+                data-item-id="{{ item.id }}"
+                data-item-name="{{ item.name }}"
+                data-item-price="{{ item.price }}"
+                data-item-image="{% if item.image %}{{ item.image.url }}{% endif %}">
+            Add to Cart
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/shop/item_detail.js' %}"></script>
+{% endblock %} 

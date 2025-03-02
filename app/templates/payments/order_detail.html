@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Order #{{ order.id }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/payments/order.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="order-container">
+    <h1>Order #{{ order.id }}</h1>
+    
+    <div class="order-items">
+        {% for order_item in order.orderitem_set.all %}
+        <div class="order-item" data-item-id="{{ order_item.item.id }}">
+            <h3>{{ order_item.item.name }}</h3>
+            <div class="quantity-controls">
+                <button class="decrease">-</button>
+                <input type="number" value="{{ order_item.quantity }}" min="1">
+                <button class="increase">+</button>
+            </div>
+            <div class="price">${{ order_item.item.price }}</div>
+            <button class="remove-item">Remove</button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="order-summary">
+        <div class="subtotal">
+            <span>Subtotal:</span>
+            <span>${{ order.calculate_total }}</span>
+        </div>
+        {% if order.discount %}
+        <div class="discount">
+            <span>Discount ({{ order.discount.percent_off }}%):</span>
+            <span>-${{ order.discount_amount }}</span>
+        </div>
+        {% endif %}
+        {% if order.tax %}
+        <div class="tax">
+            <span>Tax ({{ order.tax.rate }}%):</span>
+            <span>${{ order.tax_amount }}</span>
+        </div>
+        {% endif %}
+        
+        <button id="checkout-button" class="checkout-button">
+            Proceed to Checkout
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="{% static 'js/payments/stripe.js' %}"></script>
+    <script src="{% static 'js/payments/order.js' %}"></script>
+{% endblock %} 
